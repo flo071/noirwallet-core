@@ -23,10 +23,6 @@
 //  THE SOFTWARE.
 
 #include "BRCrypto.h"
-#include "crypto/groestl.h"
-#include "crypto/skein.h"
-#include "crypto/qubit.h"
-#include "crypto/odocrypt.h"
 
 #include <stdlib.h>
 #include <string.h>
