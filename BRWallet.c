@@ -134,7 +134,7 @@ static int _BRWalletContainsTx(BRWallet *wallet, const BRTransaction *tx)
 //        else if (tx->outputs[i].scriptLen == 22) {
 //            // try to extract P2WPKH (?)
 //            char address[91];
-//            BRBech32Encode(&address[0], DIGIBYTE_PUBKEY_BECH32, tx->outputs[i].script);
+//            BRBech32Encode(&address[0], NOIR_PUBKEY_BECH32, tx->outputs[i].script);
 //            if (BRSetContains(wallet->allAddrs, &address[0])) r = 1;
 //        }
     }

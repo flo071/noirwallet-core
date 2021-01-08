@@ -59,12 +59,6 @@ static const BRCheckPoint BRMainNetCheckpoints[] = {
 };
 
 static const BRCheckPoint BRTestNetCheckpoints[] = {
-        //   {     0, "852c475c605e1f20bbe60219c811abaeef08bf0d4ff87eef59200fd7a7567fa7", 1413145109, 0x1b336ce6 },
-        // Sitt 2016-02-18 Use Checkpoint from the First day of digiwallet fork (from breadWallet)
-        {  145000, uint256("f8d650dda836d5e3809b928b8523f050891c3bb9fa2c201bb04824a8a2fe7df6"), 1409596362, 0x1c01f271},
-        { 1800000, uint256("72f46e1fff56518dce7e540b407260ea827cb1c4652f24eb1d1917f54b95d65a"), 1454769372, 0x1c021355},
-        { 2149922, uint256("557846763a5f1eb3205d175724bd26ba7123c17c49eaaadf20b67c7e20e3118a"), 1460001303, 0x1c012a26},
-        { 4444444, uint256("0000000000000114de2ba1462056d2a9bd9ccfbd406cd2dfedaaef2c12910659"), 1494132592, 0x1a01152f}
 };
 
 static int BRTestNetVerifyDifficulty(const BRMerkleBlock *block, const BRMerkleBlock *previous, uint32_t transitionTime)
@@ -91,7 +85,7 @@ static const BRChainParams BRMainNetParams = {
 
 static const BRChainParams BRTestNetParams = {
     BRTestNetDNSSeeds,
-    12025,      // standardPort
+    16033,      // standardPort
     0xdab6c3fa, // magicNumber
     0,          // services
     BRTestNetVerifyDifficulty,

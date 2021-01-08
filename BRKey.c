@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 
 /*
- * ToDo: Replace DIGIBYTE_PUBKEY_LEGACY
+ * ToDo: Replace NOIR_PUBKEY_LEGACY
 */
 
 #include "BRKey.h"
@@ -303,7 +303,7 @@ size_t BRKeyAddress(BRKey *key, char *addr, size_t addrLen)
     assert(key != NULL);
     
     hash = BRKeyHash160(key);
-    data[0] = DIGIBYTE_PUBKEY_LEGACY;
+    data[0] = NOIR_PUBKEY_LEGACY;
 #if BITCOIN_TESTNET
     data[0] = BITCOIN_PUBKEY_ADDRESS_TEST;
 #endif
@@ -332,7 +332,7 @@ size_t BRKeySegwitAddress(BRKey* key, char* addr, size_t addrLen, uint8_t segwit
     UInt160 hash = BRKeyHash160(key);
     memcpy(&data[2], &hash, sizeof(UInt160));
     
-    count = BRBech32Encode(&result[0], DIGIBYTE_PUBKEY_BECH32, &data[0]);
+    count = BRBech32Encode(&result[0], NOIR_PUBKEY_BECH32, &data[0]);
     assert(count < addrLen);
     
     if (addr && count < addrLen)

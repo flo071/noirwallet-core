@@ -162,7 +162,7 @@ inline static UInt256 UInt256Reverse(UInt256 u)
 #else
 	
 	// add Litte Edian Log for correct hash display in console
-	// so hashes can be copy and easy compared in the digiexplorer 
+	// so hashes can be copy and easy compared in the noirexplorer 
 	
 	#define log_u256_hex_encode(u) ((const char[]) {\
 		_hexc((u).u8[31] >> 4), (_hexc((u).u8[31])), _hexc((u).u8[30] >> 4), (_hexc((u).u8[30])),\

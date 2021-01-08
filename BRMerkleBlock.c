@@ -282,21 +282,21 @@ int BRMerkleBlockIsValid(const BRMerkleBlock *block, uint32_t currentTime)
     if (block->totalTx > 0 && ! UInt256Eq(merkleRoot, block->merkleRoot)) {
         r = 0;
 
-        digi_log("invalid merkleRoot: %s - %s", u256hex(merkleRoot), u256hex(block->merkleRoot));
+        noir_log("invalid merkleRoot: %s - %s", u256hex(merkleRoot), u256hex(block->merkleRoot));
     }
     
     // check if timestamp is too far in future
     if (block->timestamp > currentTime + BLOCK_MAX_TIME_DRIFT) {
         r = 0;
 
-        digi_log("timestamp too far in future for block (%s, height = %d): %d - %d", u256hex(block->blockHash), block->height, block->timestamp, (currentTime + BLOCK_MAX_TIME_DRIFT));
+        noir_log("timestamp too far in future for block (%s, height = %d): %d - %d", u256hex(block->blockHash), block->height, block->timestamp, (currentTime + BLOCK_MAX_TIME_DRIFT));
     }
     
     // check if proof-of-work target is out of range
     if (target == 0 || target & 0x00800000 || size > maxsize || (size == maxsize && target > maxtarget)) {
         r = 0;
 
-        digi_log("target is out of range: %x - %x - %x - %x", target, maxtarget, size, maxsize);
+        noir_log("target is out of range: %x - %x - %x - %x", target, maxtarget, size, maxsize);
     }
     
     if (size > 3) UInt32SetLE(&t.u8[size - 3], target);
@@ -307,7 +307,7 @@ int BRMerkleBlockIsValid(const BRMerkleBlock *block, uint32_t currentTime)
         //if (block->blockHash.u8[i] > t.u8[i]) {
         //    r = 0;
         //
-        //    digi_log("invalid blockHash[%d]: %x - %x, %s", i, block->blockHash.u8[i], t.u8[i], log_u256_hex_encode(block->blockHash));
+        //    noir_log("invalid blockHash[%d]: %x - %x, %s", i, block->blockHash.u8[i], t.u8[i], log_u256_hex_encode(block->blockHash));
         //}
     }
 
@@ -347,7 +347,7 @@ int BRMerkleBlockVerifyDifficulty(const BRMerkleBlock *block, const BRMerkleBloc
     return r; // don't worry about difficulty on testnet for now
 #endif
 
-    // TODO: fix difficulty target check for Digibyte (Multishield)
+    // TODO: fix difficulty target check for Noir
     /*if (r && (block->height % BLOCK_DIFFICULTY_INTERVAL) == 0) {
         // target is in "compact" format, where the most significant byte is the size of resulting value in bytes, next
         // bit is the sign, and the remaining 23bits is the value after having been right shifted by (size - 3)*8 bits

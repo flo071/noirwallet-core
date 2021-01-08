@@ -31,13 +31,13 @@
 
 #if defined(TARGET_OS_MAC)
 #include <Foundation/Foundation.h>
-#define digi_log(...) NSLog(__VA_ARGS__)
+#define noir_log(...) NSLog(__VA_ARGS__)
 #elif defined(__ANDROID__)
 #include <android/log.h>
-#define digi_log(...) __android_log_print(ANDROID_LOG_ERROR, "digi", __VA_ARGS__)
+#define noir_log(...) __android_log_print(ANDROID_LOG_ERROR, "noirwallet", __VA_ARGS__)
 #else
 #include <stdio.h>
-#define digi_log(...) printf(__VA_ARGS__)
+#define noir_log(...) printf(__VA_ARGS__)
 #endif
 
 #ifdef __cplusplus
@@ -65,21 +65,9 @@ typedef struct {
     uint32_t height;
 } BRMerkleBlock;
     
-// Taken from https://github.com/digibyte/digibyte/blob/ce4e150f6d77abdd533a3b289ffd9f19fe8af277/src/primitives/block.h
 typedef enum {
     // primary version
     BLOCK_VERSION_DEFAULT        = 2,
-    
-    // algo
-    BLOCK_VERSION_ALGO           = (15 << 8),
-    BLOCK_VERSION_SCRYPT         = (0 << 8),
-    BLOCK_VERSION_SHA256D        = (2 << 8), // 512
-    BLOCK_VERSION_GROESTL        = (4 << 8), // 1024
-    BLOCK_VERSION_SKEIN          = (6 << 8), // 1536
-    BLOCK_VERSION_QUBIT          = (8 << 8), // 2048
-    //BLOCK_VERSION_EQUIHASH       = (10 << 8),
-    //BLOCK_VERSION_ETHASH         = (12 << 8),
-    BLOCK_VERSION_ODO            = (14 << 8), // 3584
 } BLOCKHASH_ALGO;
 
 #define BR_MERKLE_BLOCK_NONE\
