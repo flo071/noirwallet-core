@@ -32,8 +32,7 @@
 #include <assert.h>
 
 #define MAX_PROOF_OF_WORK 0x1e0fffff    // highest value for difficulty target (higher values are less difficult)
-#define TARGET_TIMESPAN (0.10*24*60*60) // the targeted timespan between difficulty target adjustments
-#define BLOCK_VERSION_ALGO (7 << 9)
+#define TARGET_TIMESPAN (150*3) // the targeted timespan between difficulty target adjustments
 
 inline static int _ceil_log2(int x)
 {
@@ -137,45 +136,6 @@ BRMerkleBlock *BRMerkleBlockParse(const uint8_t *buf, size_t bufLen)
         }
         
         BRSHA256_2(&block->blockHash, buf, 80);
-
-        switch (block->version & BLOCK_VERSION_ALGO) {
-            case BLOCK_VERSION_SHA256D:
-                // void BRSHA256_2(void *md32, const void *data, size_t len)
-                BRSHA256_2(&block->powHash, buf, 80);
-                break;
-
-            case BLOCK_VERSION_SKEIN:
-                // void BRSkein(const char* input, char* output)
-                BRSkein((const char*) buf, (char*) &block->powHash.u8[0]);
-                break;
-
-            case BLOCK_VERSION_QUBIT:
-                // void BRQubit(const char* input, char* output)
-                BRQubit((const char*) buf, (char*) &block->powHash.u8[0]);
-                break;
-
-            case BLOCK_VERSION_ODO:
-                // void BROdocrypt(const char* input, const uint32_t nTime, uint8_t* output)
-                BROdocrypt((const char*) buf, block->timestamp, &block->powHash.u8[0]);
-                break;
-                
-            case BLOCK_VERSION_GROESTL:
-                // void BRGroestl(const char* input, char* output)
-                BRGroestl((const char*) buf, (char*) &block->powHash.u8[0]);
-                break;
-
-            case BLOCK_VERSION_SCRYPT:
-                // void BRScrypt(void *dk, size_t dkLen, const void *pw, size_t pwLen, const void *salt, size_t saltLen, unsigned n, unsigned r, unsigned p)
-                BRScrypt(&block->powHash, sizeof(block->powHash), buf, 80, buf, 80, 1024, 1, 1);
-                break;
-                
-            default:
-#if DEBUG
-                assert(0 && "Invalid algorithm");
-#else
-                break;
-#endif
-        }
     }
     
     return block;
@@ -322,33 +282,33 @@ int BRMerkleBlockIsValid(const BRMerkleBlock *block, uint32_t currentTime)
     if (block->totalTx > 0 && ! UInt256Eq(merkleRoot, block->merkleRoot)) {
         r = 0;
 
-        digi_log("invalid merkleRoot: %s - %s", u256hex(merkleRoot), u256hex(block->merkleRoot));
+        noir_log("invalid merkleRoot: %s - %s", u256hex(merkleRoot), u256hex(block->merkleRoot));
     }
     
     // check if timestamp is too far in future
     if (block->timestamp > currentTime + BLOCK_MAX_TIME_DRIFT) {
         r = 0;
 
-        digi_log("timestamp too far in future for block (%s, height = %d): %d - %d", u256hex(block->blockHash), block->height, block->timestamp, (currentTime + BLOCK_MAX_TIME_DRIFT));
+        noir_log("timestamp too far in future for block (%s, height = %d): %d - %d", u256hex(block->blockHash), block->height, block->timestamp, (currentTime + BLOCK_MAX_TIME_DRIFT));
     }
     
     // check if proof-of-work target is out of range
     if (target == 0 || target & 0x00800000 || size > maxsize || (size == maxsize && target > maxtarget)) {
         r = 0;
 
-        digi_log("target is out of range: %x - %x - %x - %x", target, maxtarget, size, maxsize);
+        noir_log("target is out of range: %x - %x - %x - %x", target, maxtarget, size, maxsize);
     }
     
     if (size > 3) UInt32SetLE(&t.u8[size - 3], target);
     else UInt32SetLE(t.u8, target >> (3 - size)*8);
 
     for (int i = sizeof(t) - 1; r && i >= 0; i--) { // check proof-of-work
-        if (block->powHash.u8[i] < t.u8[i]) break;
-        if (block->powHash.u8[i] > t.u8[i]) {
+        /*if (block->blockHash.u8[i] < t.u8[i]) break;
+        if (block->blockHash.u8[i] > t.u8[i]) {
             r = 0;
 
-            digi_log("invalid blockHash[%d]: %x - %x, %s", i, block->powHash.u8[i], t.u8[i], log_u256_hex_encode(block->blockHash));
-        }
+            noir_log("invalid blockHash[%d]: %x - %x, %s", i, block->blockHash.u8[i], t.u8[i], log_u256_hex_encode(block->blockHash));
+        }*/
     }
 
     return r;
@@ -386,33 +346,6 @@ int BRMerkleBlockVerifyDifficulty(const BRMerkleBlock *block, const BRMerkleBloc
     // TODO: implement testnet difficulty rule check
     return r; // don't worry about difficulty on testnet for now
 #endif
-
-    // TODO: fix difficulty target check for Digibyte (Multishield)
-    /*if (r && (block->height % BLOCK_DIFFICULTY_INTERVAL) == 0) {
-        // target is in "compact" format, where the most significant byte is the size of resulting value in bytes, next
-        // bit is the sign, and the remaining 23bits is the value after having been right shifted by (size - 3)*8 bits
-        static const uint32_t maxsize = MAX_PROOF_OF_WORK >> 24, maxtarget = MAX_PROOF_OF_WORK & 0x00ffffff;
-        int timespan = (int)((int64_t)previous->timestamp - (int64_t)transitionTime), size = previous->target >> 24;
-        uint64_t target = previous->target & 0x00ffffff;
-    
-        // limit difficulty transition to -75% or +400%
-        if (timespan < TARGET_TIMESPAN/4) timespan = TARGET_TIMESPAN/4;
-        if (timespan > TARGET_TIMESPAN*4) timespan = TARGET_TIMESPAN*4;
-    
-        // TARGET_TIMESPAN happens to be a multiple of 256, and since timespan is at least TARGET_TIMESPAN/4, we don't
-        // lose precision when target is multiplied by timespan and then divided by TARGET_TIMESPAN/256
-        target *= timespan;
-        target /= TARGET_TIMESPAN >> 8;
-        size--; // decrement size since we only divided by TARGET_TIMESPAN/256
-    
-        while (size < 1 || target > 0x007fffff) target >>= 8, size++; // normalize target for "compact" format
-    
-        // limit to MAX_PROOF_OF_WORK
-        if (size > maxsize || (size == maxsize && target > maxtarget)) target = maxtarget, size = maxsize;
-    
-        if (block->target != ((uint32_t)target | size << 24)) r = 0;
-    }
-    else if (r && block->target != previous->target) r = 0;*/
     
     return r;
 }

@@ -23,7 +23,7 @@
 //  THE SOFTWARE.
 
 /*
- * ToDo: Replace DIGIBYTE_PUBKEY_LEGACY
+ * ToDo: Replace NOIR_PUBKEY_LEGACY
 */
 
 #include "BRKey.h"
@@ -34,8 +34,8 @@
 #include <assert.h>
 #include <pthread.h>
 
-#define BITCOIN_PRIVKEY        128
-#define BITCOIN_PRIVKEY_LEGACY 158
+#define BITCOIN_PRIVKEY        83
+#define BITCOIN_PRIVKEY_LEGACY 83
 #define BITCOIN_PRIVKEY_TEST   239
 
 #if __BIG_ENDIAN__ || (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__) ||\
@@ -301,7 +301,7 @@ size_t BRKeyAddress(BRKey *key, char *addr, size_t addrLen)
     assert(key != NULL);
     
     hash = BRKeyHash160(key);
-    data[0] = DIGIBYTE_PUBKEY_LEGACY;
+    data[0] = NOIR_PUBKEY_LEGACY;
 #if BITCOIN_TESTNET
     data[0] = BITCOIN_PUBKEY_ADDRESS_TEST;
 #endif

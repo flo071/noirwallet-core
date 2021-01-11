@@ -40,7 +40,7 @@
 #define _wallet_log(...) NSLog(__VA_ARGS__)
 #elif defined(__ANDROID__)
 #include <android/log.h>
-#define _wallet_log(...) __android_log_print(ANDROID_LOG_DEBUG, "digiwallet", __VA_ARGS__)
+#define _wallet_log(...) __android_log_print(ANDROID_LOG_DEBUG, "noirwallet", __VA_ARGS__)
 #else
 #include <stdio.h>
     #ifdef DEBUG
@@ -55,7 +55,7 @@
     #define debug_log(...) NSLog(__VA_ARGS__)
 #elif defined(__ANDROID__)
     #include <android/log.h>
-    #define debug_log(...) __android_log_print(ANDROID_LOG_DEBUG, "digiwallet", __VA_ARGS__)
+    #define debug_log(...) __android_log_print(ANDROID_LOG_DEBUG, "noirwallet", __VA_ARGS__)
 #else
     #include <stdio.h>
     #ifdef DEBUG
