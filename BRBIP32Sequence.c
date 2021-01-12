@@ -29,8 +29,8 @@
 #include <assert.h>
 
 #define BIP32_SEED_KEY "Noir seed"
-#define BIP32_XPRV     "\x04\x88\xAD\xE4"
-#define BIP32_XPUB     "\x04\x88\xB2\x1E"
+#define BIP32_XPRV     "\x04\x35\x87\xCF"
+#define BIP32_XPUB     "\x04\x35\x83\x94"
 
 // BIP32 is a scheme for deriving chains of addresses from a seed value
 // https://github.com/bitcoin/bips/blob/master/bip-0032.mediawiki
